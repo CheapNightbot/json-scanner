@@ -1,142 +1,83 @@
+#include <ctype.h>
 #include <stdio.h>
 #include "token.h"
-#include <ctype.h>
 
+// Function prototypes
+void print(char *text, char *token, int char_num, int line_num);
 
 int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        printf("Usage: ./sjson file.json\n");
+        printf("Usage: %s file.json\n", argv[0]);
         return 1;
     }
 
     FILE *json = fopen(argv[1], "r");
-
-    char c;
-    while ((c = fgetc(json)) != EOF)
+    if (json == NULL)
     {
-        if (c == '{')
-        {
-            printf("TEXT: %c ~ TOKEN: %d\n", c, TOKEN_LBRACKET);
-        }
-        else if (isspace(c))
-        {
-            char d = '\0';
-            do
-            {
-                d = fgetc(json);
-            } while (isspace(d));
-            ungetc(d, json);
-        }
-        else if (c == '"')
-        {
-            printf("TEXT: ");
-            char d = '\0';
-            do
-            {
-                printf("%c", d);
-                d = fgetc(json);
-            } while (d != '"');
+        printf("Unable to open %s\n", argv[1]);
+        return 1;
+    }
 
-            d = fgetc(json);
-            if (d == ':')
-            {
-                ungetc(d, json);
-                printf(" ~ TOKEN: %d\n", TOKEN_STRING);
-            }
-            else
-            {
-                printf(" ~ TOKEN: %d\n", TOKEN_VALUE);
-            }
-        }
-        else if (c == ':')
+    printf("\n%-8s | %s:%s | -> %s\n", "TOKEN", "LINE", "CHAR", "TEXT");
+    printf("----------------------------\n");
+
+    // Initialize variables for line & character number
+    int line_num, char_num = 0;
+
+    // Buffer to read file into, char by char
+    char c;
+
+    while ((c = getc(json)) != EOF)
+    {
+        // Add read char into s array for easier printing later
+        char s[] = {c};
+
+        switch (c)
         {
-            printf("TEXT: %c ~ TOKEN: %d\n", c, TOKEN_COLON);
-        }
-        else if (c == '}')
-        {
-            printf("TEXT: %c ~ TOKEN: %d\n", c, TOKEN_RBRACKET);
-        }
-        else
-        {
-            if (c == 't')
-            {
-                ungetc(c, json);
-                printf("TEXT: ");
-                char d = '\0';
-                do
-                {
-                    printf("%c", d);
-                    d = fgetc(json);
-                    if (d == '}' || isspace(d))
-                    {
-                        ungetc(d, json);
-                        break;
-                    }
-                } while (d != ',');
-                if (d == '}')
-                {
-                    ungetc(d, json);
-                }
-                printf(" ~ TOKEN: %d\n", TOKEN_TRUE);
-            }
-            else if (c == 'f')
-            {
-                ungetc(c, json);
-                printf("TEXT: ");
-                char d = '\0';
-                do
-                {
-                    printf("%c", d);
-                    d = fgetc(json);
-                    if (d == '}' || isspace(d))
-                    {
-                        ungetc(d, json);
-                        break;
-                    }
-                } while (d != ',');
-                printf(" ~ TOKEN: %d\n", TOKEN_FALSE);
-            }
-            else if (c == 'n')
-            {
-                ungetc(c, json);
-                printf("TEXT: ");
-                char d = '\0';
-                do
-                {
-                    printf("%c", d);
-                    d = fgetc(json);
-                    if (d == '}' || isspace(d))
-                    {
-                        ungetc(d, json);
-                        break;
-                    }
-                } while (d != ',');
-                printf(" ~ TOKEN: %d\n", TOKEN_NULL);
-            }
-            else if (isdigit(c))
-            {
-                ungetc(c, json);
-                printf("TEXT: ");
-                char d = '\0';
-                do
-                {
-                    printf("%c", d);
-                    d = fgetc(json);
-                    if (d == '}' || isspace(d))
-                    {
-                        ungetc(d, json);
-                        break;
-                    }
-                } while (d != ',');
-                printf(" ~ TOKEN: %d\n", TOKEN_VALUE);
-            }
-            else
-            {
-                printf("TOKEN: %d\n", TOKEN_ERROR);
-            }
+        case '{':
+            char_num++;
+            print(s, token(TOKEN_LBRACE), char_num, line_num);
+            break;
+
+        case '}':
+            char_num++;
+            print(s, token(TOKEN_RBRACE), char_num, line_num);
+            break;
+
+        case ':':
+            char_num++;
+            print(s, token(TOKEN_COLON), char_num, line_num);
+            break;
+
+        case ',':
+            char_num++;
+            print(s, token(TOKEN_COMMA), char_num, line_num);
+            break;
+
+        case '\n':
+            char_num = 0;
+            line_num++;
+            break;
+
+        case ' ' | '\t':
+            char_num++;
+            break;
+
+        default:
+            char_num++;
+            print(s, token(TOKEN_ERROR), char_num, line_num);
+            break;
         }
     }
+
+    fclose(json);
     return 0;
+}
+
+// Format and print parsed text and token type
+void print(char *text, char *token, int char_num, int line_num)
+{
+    printf("%-8s %-4c %i:%-4i | -> %s\n", token, '|', line_num, char_num, text);
 }
