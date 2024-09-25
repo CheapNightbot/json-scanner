@@ -21,13 +21,17 @@ int main(int argc, char *argv[])
     }
 
     printf("\n%-8s | %s:%s | -> %s\n", "TOKEN", "LINE", "CHAR", "TEXT");
-    printf("----------------------------\n");
+    printf("------------------------------\n");
 
     // Initialize variables for line & character number
-    int line_num, char_num = 0;
+    int char_num = 1;
+    int line_num = 1;
 
     // Buffer to read file into, char by char
     char c;
+
+    // Buffer for space character (i.e., a space or tab)
+    char tmp;
 
     while ((c = getc(json)) != EOF)
     {
@@ -37,32 +41,61 @@ int main(int argc, char *argv[])
         switch (c)
         {
         case '{':
-            char_num++;
             print(s, token(TOKEN_LBRACE), char_num, line_num);
+            char_num++;
             break;
 
         case '}':
-            char_num++;
             print(s, token(TOKEN_RBRACE), char_num, line_num);
+            char_num++;
             break;
 
         case ':':
-            char_num++;
             print(s, token(TOKEN_COLON), char_num, line_num);
+            char_num++;
             break;
 
         case ',':
-            char_num++;
             print(s, token(TOKEN_COMMA), char_num, line_num);
+            char_num++;
             break;
 
+        // Handle newline character
         case '\n':
-            char_num = 0;
+            char_num = 1;
             line_num++;
             break;
 
-        case ' ' | '\t':
-            char_num++;
+        // Skip a space character
+        case ' ':
+            ungetc(c, json);
+            do
+            {
+                tmp = fgetc(json);
+                if (tmp != ' ')
+                {
+                    ungetc(tmp, json);
+                    break;
+                }
+                char_num++;
+            } while (1);
+
+            break;
+
+        // Skip a tab character
+        case '\t':
+            ungetc(c, json);
+            do
+            {
+                tmp = fgetc(json);
+                if (tmp != '\t')
+                {
+                    ungetc(tmp, json);
+                    break;
+                }
+                char_num++;
+            } while (1);
+
             break;
 
         default:
