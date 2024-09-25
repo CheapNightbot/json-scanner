@@ -1,3 +1,3 @@
 # json-scanner
 
-Hand-made scanner for JavaScript Object Notation (JSON)
+Hand-made scanner for JavaScript Object Notation (JSON). Just for FUN & LEARNING ~!
