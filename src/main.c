@@ -121,7 +121,19 @@ int main(int argc, char *argv[])
 
             // Terminate the string with NUL
             text[i] = '\0';
-            print(text, token(TOKEN_STRING), char_start, line_num);
+
+            tmp = getc(json);
+            if (tmp == ':')
+            {
+                ungetc(tmp, json);
+                print(text, token(TOKEN_STRING), char_start, line_num);
+            }
+            else if (tmp == ',')
+            {
+                ungetc(tmp, json);
+                print(text, token(TOKEN_VALUE), char_start, line_num);
+            }
+
             free(text);
             break;
 
