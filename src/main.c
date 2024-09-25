@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "token.h"
 
 // Function prototypes
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
     // Buffer to read file into, char by char
     char c;
 
-    // Buffer for space character (i.e., a space or tab)
+    // Buffer for space character (i.e., a space or tab) and char
     char tmp;
 
     while ((c = getc(json)) != EOF)
@@ -58,6 +59,70 @@ int main(int argc, char *argv[])
         case ',':
             print(s, token(TOKEN_COMMA), char_num, line_num);
             char_num++;
+            break;
+
+        case '"':
+            // Buffer size for a string
+            int buffer_size = 10;
+
+            // Index for the string
+            int i = 0;
+
+            // Remember the starting position of the string
+            int char_start = char_num;
+
+            // Allocate memroy for the text
+            char *text = malloc(buffer_size * sizeof(char));
+            if (text == NULL)
+            {
+                printf("Memory allocation failed!\n");
+                return 1;
+            }
+
+            // Add litral doube quote before `text` string
+            text[i++] = '"';
+
+            do
+            {
+                tmp = fgetc(json);
+
+                // Assume reached the end of the string
+                if (tmp == '"')
+                {
+                    char_num += 2;
+                    break;
+                }
+
+                // Check if buffer is full
+                // `-2` bacuse we need space for double quote & terminator character.
+                if (i >= buffer_size - 2)
+                {
+                    // Double buffer size
+                    buffer_size *= 2;
+
+                    // Reallocate memory for the text
+                    char *temp = realloc(text, buffer_size * sizeof(char));
+                    if (temp == NULL)
+                    {
+                        printf("Memory reallocation failed!\n");
+                        free(text);
+                        return 1;
+                    }
+                    // Point to newly allocated memroy
+                    text = temp;
+                }
+                text[i] = tmp;
+                char_num++;
+                i++;
+            } while (1);
+
+            // Add litral doube quote after `text` string
+            text[i++] = '"';
+
+            // Terminate the string with NUL
+            text[i] = '\0';
+            print(text, token(TOKEN_STRING), char_start, line_num);
+            free(text);
             break;
 
         // Handle newline character
