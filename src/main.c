@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
                 return 1;
             }
 
-            // Add litral doube quote before `text` string
+            // Add litral double quote before `text` string
             text[i++] = '"';
 
             do
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            // Add litral doube quote after `text` string
+            // Add litral double quote after `text` string
             text[i++] = '"';
 
             // Terminate the string with NUL
