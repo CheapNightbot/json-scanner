@@ -2,64 +2,74 @@ typedef enum
 {
     TOKEN_EOF = 0,
     TOKEN_LBRACE,
+    TOKEN_RBRACE,
     TOKEN_LBRACKET,
-    TOKEN_COMMA,
-    TOKEN_STRING,
+    TOKEN_RBRACKET,
     TOKEN_COLON,
+    TOKEN_COMMA,
+    TOKEN_NUMBER,
+    TOKEN_STRING,
+    TOKEN_KEY,
     TOKEN_VALUE,
     TOKEN_TRUE,
     TOKEN_FALSE,
     TOKEN_NULL,
-    TOKEN_RBRACKET,
-    TOKEN_RBRACE,
     TOKEN_ERROR
 } token_t;
 
-
 // Return token type string based on token
-char *token(int token)
+char *token(int token, int type)
 {
     switch (token)
     {
     case TOKEN_LBRACE:
         return "LBRACE";
-        break;
-    case TOKEN_LBRACKET:
-        return "LBRACKET";
-        break;
-    case TOKEN_COMMA:
-        return "COMMA";
-        break;
-    case TOKEN_STRING:
-        return "STRING";
-        break;
-    case TOKEN_COLON:
-        return "COLON";
-        break;
-    case TOKEN_VALUE:
-        return "VALUE";
-        break;
-    case TOKEN_TRUE:
-        return "TRUE";
-        break;
-    case TOKEN_FALSE:
-        return "FALSE";
-        break;
-    case TOKEN_NULL:
-        return "NULL";
-        break;
-    case TOKEN_RBRACKET:
-        return "RBRACKET";
-        break;
+
     case TOKEN_RBRACE:
         return "RBRACE";
-        break;
+
+    case TOKEN_LBRACKET:
+        return "LBRACKET";
+
+    case TOKEN_RBRACKET:
+        return "RBRACKET";
+
+    case TOKEN_COLON:
+        return "COLON";
+
+    case TOKEN_COMMA:
+        return "COMMA";
+
+    case TOKEN_NUMBER:
+        return "NUMBER";
+
+    case TOKEN_STRING:
+        switch (type)
+        {
+        case TOKEN_KEY:
+            return "STRING_KEY";
+
+        case TOKEN_VALUE:
+            return "STRING_VALUE";
+
+        default:
+            return "STRING";
+        }
+
+    case TOKEN_TRUE:
+        return "TRUE";
+
+    case TOKEN_FALSE:
+        return "FALSE";
+
+    case TOKEN_NULL:
+        return "NULL";
+
     case TOKEN_ERROR:
         return "ERROR";
-        break;
+
     default:
         // Handle error or unknown token
         return "UNKNOWN";
-        break;
     }
 }
