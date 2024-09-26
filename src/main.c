@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
             if (e == '?')
             {
                 text[i] = '\0';
-                print(text, token(TOKEN_ERROR, -1), char_num, line_num, "Expected \"");
+                print(text, token(TOKEN_ERROR, -1), char_num, line_num, "Closing Quote is missing.");
                 free(text);
                 break;
             }
