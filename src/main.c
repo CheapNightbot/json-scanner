@@ -252,26 +252,26 @@ int main(int argc, char *argv[])
                             return 1;
                         }
                         // Point to newly allocated memory
-                        text = temp;
+                        nums = temp;
                     }
-                    text[i] = tmp;
+                    nums[i] = tmp;
                     char_num++;
                     i++;
                 } while (1);
 
                 // Terminate the string with NUL
-                text[i] = '\0';
+                nums[i] = '\0';
 
                 tmp = getc(json);
                 if (tmp == ':')
                 {
                     ungetc(tmp, json);
-                    print(text, token(TOKEN_NUMBER, TOKEN_KEY), char_start, line_num, NULL);
+                    print(nums, token(TOKEN_NUMBER, TOKEN_KEY), char_start, line_num, NULL);
                 }
 
                 else if (tmp == ',')
                 {
-                    print(text, token(TOKEN_NUMBER, TOKEN_VALUE), char_start, line_num, NULL);
+                    print(nums, token(TOKEN_NUMBER, TOKEN_VALUE), char_start, line_num, NULL);
                 }
 
                 free(nums);
