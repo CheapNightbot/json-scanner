@@ -2,6 +2,11 @@
 
 Hand-made scanner for JavaScript Object Notation (**JSON**). Just for FUN & LEARNING ~!
 
+<img src="resources/scanner.svg" alt="A Scanner" />
+
+> [!NOTE]
+> There are lot of things to do. For example, it does NOT care about special character or escape squences inside the string and will identify them as an error.
+
 ## ⟫ Example ?
 
 Running this scanner on following test **JSON** file... :
